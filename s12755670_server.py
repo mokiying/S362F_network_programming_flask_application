@@ -86,7 +86,7 @@ def pi():
     if simulations < 100 or simulations > 100000000:
         return jsonify({"error": "invalid field simulations"}), 400
     
-    if concurrency < 1 or concurrency > 8:
+    if not isinstance(concurrency, int) or concurrency < 1 or concurrency > 8:
         return jsonify({"error": "invalid field concurrency"}), 400
     
 
@@ -123,7 +123,7 @@ def legacy_pi():
     elif not isinstance(protocol, str) or (protocol not in ['tcp', 'udp']):
         return jsonify({"error": "invalid field protocol"}), 400
     
-    if concurrency < 1 or concurrency > 8:
+    if not isinstance(concurrency, int) or concurrency < 1 or concurrency > 8:
         return jsonify({"error": "invalid field concurrency"}), 400
 
     pi = 0

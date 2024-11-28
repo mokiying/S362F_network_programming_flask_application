@@ -74,8 +74,13 @@ class TestProjectServer(unittest.TestCase):
         self.assertEqual(status_code, 400)
         self.assertEqual(res_json, {"error": "invalid field simulations"})
 
-    def test_pi_invalid_concurrency(self):
+    def test_pi_invalid_concurrency_int(self):
         res_json, status_code = server_test(f"http://{HOST}:{PORT}/pi", "POST", {"username":"1111", "password":"1111-pw", "simulations":100000000, "concurrency":9})
+        self.assertEqual(status_code, 400)
+        self.assertEqual(res_json, {"error": "invalid field concurrency"})
+
+    def test_pi_invalid_concurrency_string(self):
+        res_json, status_code = server_test(f"http://{HOST}:{PORT}/pi", "POST", {"username":"1111", "password":"1111-pw", "simulations":100000000, "concurrency":"8"})
         self.assertEqual(status_code, 400)
         self.assertEqual(res_json, {"error": "invalid field concurrency"})
 
@@ -138,8 +143,13 @@ class TestProjectServer(unittest.TestCase):
         self.assertEqual(status_code, 400)
         self.assertEqual(res_json, {"error": "invalid field protocol"})
 
-    def test_legacy_pi_invalid_concurrency(self):
+    def test_legacy_pi_invalid_concurrency_int(self):
         res_json, status_code = server_test(f"http://{HOST}:{PORT}/legacy_pi", "POST", {"username":"1112", "password":"1112-pw", "protocol":"tcp", "concurrency": 0})
+        self.assertEqual(status_code, 400)
+        self.assertEqual(res_json, {"error": "invalid field concurrency"})
+
+    def test_legacy_pi_invalid_concurrency_string(self):
+        res_json, status_code = server_test(f"http://{HOST}:{PORT}/legacy_pi", "POST", {"username":"1112", "password":"1112-pw", "protocol":"tcp", "concurrency": "1"})
         self.assertEqual(status_code, 400)
         self.assertEqual(res_json, {"error": "invalid field concurrency"})
 
