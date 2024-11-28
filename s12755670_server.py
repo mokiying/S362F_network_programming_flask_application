@@ -5,7 +5,8 @@ from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 
 app = Flask(__name__)
 HOST, PORT = "localhost", 5000
-LEGACY_HOST, LEGACY_PORT = "0.0.0.0", 31416
+app = Flask(__name__)
+LEGACY_HOST, LEGACY_PORT = "localhost", 31416
 STATS_FILE = 'user_statistics.txt'
 lock = threading.Lock() 
 
@@ -21,6 +22,8 @@ def myth_value(n):
 
 #R2
 def is_float(n):    #check the string is/isnot valid float
+    if 'e' in n.lower():
+        return False
     try:
         float(n)
         return True
@@ -31,6 +34,7 @@ def legacy_pi_tcp():
     global socket, LEGACY_HOST, LEGACY_PORT    
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((LEGACY_HOST, LEGACY_PORT))
+        s.sendall(b"") 
         pi = s.recv(1024)
     return pi.decode()
 
@@ -92,7 +96,7 @@ def pi():
 
     total_count = 0
     if concurrency > 1:
-        with ThreadPoolExecutor(max_workers=concurrency) as executor:
+        with ProcessPoolExecutor(max_workers=concurrency) as executor:
             set = [executor.submit(myth_value, simulations // concurrency) for _ in range(concurrency)]
             total_count = sum(se.result() for se in set)
     else:
@@ -130,14 +134,18 @@ def legacy_pi():
     with ThreadPoolExecutor(max_workers=concurrency) as executor:
         results = []
         if protocol == "tcp": 
-            pi_set = [executor.submit(legacy_pi_tcp) for _ in range(concurrency)]
+            set = [executor.submit(legacy_pi_tcp) for _ in range(concurrency)]
         elif protocol == "udp": 
-            pi_set = [executor.submit(legacy_pi_udp) for _ in range(concurrency)]
+            set = [executor.submit(legacy_pi_udp) for _ in range(concurrency)]
         
-        for n in str(pi_set):
+        for n in set:
+            n = n.result()
+            print(f"before float: {n}")
             if(is_float(n)):
+                print(f"after float: {n}")
                 results.append(float(n))
 
+        print(results)
         results_count = len(results)
         pi = sum(results) / results_count if results_count > 0 else 0
 
@@ -170,5 +178,5 @@ def statistics():
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host=HOST, port=PORT,debug=True)
     

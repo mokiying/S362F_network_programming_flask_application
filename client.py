@@ -4,8 +4,8 @@ import json, requests
 USERNAME, PASSWORD = "1110", "1110-pw"
 SIMULATIONS = 100000
 CONCURRENCY = 2
-#PROTOCAL = "tcp"
-PROTOCAL = "udp"
+PROTOCAL = "tcp"
+#PROTOCAL = "udp"
 
 def r1():
     req = {"username":USERNAME, "password":PASSWORD, "simulations":SIMULATIONS, "concurrency":CONCURRENCY}
@@ -24,6 +24,6 @@ def r3():
 
 
 if __name__ == "__main__":
-    print(r1())
+    #print(r1())
     print(r2())
-    print(r3())
+    #print(r3())
