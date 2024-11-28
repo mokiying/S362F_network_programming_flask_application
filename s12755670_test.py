@@ -174,28 +174,24 @@ class TestProjectServer(unittest.TestCase):
         res_json, status_code = server_test(f"http://{HOST}:{PORT}/legacy_pi", "POST", {"username":"1112", "password":"1112-pw", "protocol":"tcp", "concurrency":4})
         self.assertEqual(status_code, 200)
         pi_value = res_json.get("pi")
-        print(pi_value)
         self.assertTrue(pi_value==0 or(pi_value >= 2.35 and pi_value <= 3.75))
 
     def test_legacy_pi_2_udp(self):
         res_json, status_code = server_test(f"http://{HOST}:{PORT}/legacy_pi", "POST", {"username":"1112", "password":"1112-pw", "protocol":"udp", "concurrency":4})
         self.assertEqual(status_code, 200)
         pi_value = res_json.get("pi")
-        print(pi_value)
         self.assertTrue(pi_value==0 or(pi_value >= 2.35 and pi_value <= 3.75))
 
     def test_legacy_pi_3_tcp(self):
         res_json, status_code = server_test(f"http://{HOST}:{PORT}/legacy_pi", "POST", {"username":"1112", "password":"1112-pw", "protocol":"tcp", "concurrency":8})
         self.assertEqual(status_code, 200)
         pi_value = res_json.get("pi")
-        print(pi_value)
         self.assertTrue(pi_value==0 or(pi_value >= 3 and pi_value <= 3.3))
 
     def test_legacy_pi_3_udp(self):
         res_json, status_code = server_test(f"http://{HOST}:{PORT}/legacy_pi", "POST", {"username":"1112", "password":"1112-pw", "protocol":"udp", "concurrency":8})
         self.assertEqual(status_code, 200)
         pi_value = res_json.get("pi")
-        print(pi_value)
         self.assertTrue(pi_value==0 or(pi_value >= 3 and pi_value <= 3.3))
 
     #statistics

@@ -57,10 +57,20 @@ def get_statistics():
         open(STATS_FILE, 'w').close()
     return stats
 
-def save_statistics(stats):
+def save_statistics(username):
+    with lock:
+        stats = get_statistics()
+
+        if username in stats:
+            stats[username] += 1
+        else:
+            stats[username] = 1
+
     with open(STATS_FILE, 'w') as f:
         for username, count in stats.items():
             f.write(f"{username} {count}\n")
+
+    return stats
 
 #R4
 def is_valid_user(username, password):
@@ -83,6 +93,8 @@ def pi():
     #R4
     if not is_valid_user(username, password):
         return jsonify({"error": "user info error"}), 401
+    else:
+        save_statistics(username)
     #---
 
     if not simulations:
@@ -120,6 +132,8 @@ def legacy_pi():
     #R4
     if not is_valid_user(username, password):
         return jsonify({"error": "user info error"}), 401
+    else:
+        save_statistics(username)
     #---
 
     if not protocol:
@@ -140,12 +154,9 @@ def legacy_pi():
         
         for n in set:
             n = n.result()
-            print(f"before float: {n}")
             if(is_float(n)):
-                print(f"after float: {n}")
                 results.append(float(n))
 
-        print(results)
         results_count = len(results)
         pi = sum(results) / results_count if results_count > 0 else 0
 
@@ -164,16 +175,7 @@ def statistics():
         return jsonify({"error": "user info error"}), 401
     #---
 
-    with lock:
-        stats = get_statistics()
-
-        if username in stats:
-            stats[username] += 1
-        else:
-            stats[username] = 1
-        save_statistics(stats)
-
-    result = stats
+    result = save_statistics(username)
     return jsonify(result)
 
 
