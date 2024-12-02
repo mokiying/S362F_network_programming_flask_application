@@ -206,7 +206,49 @@ class TestProjectServer(unittest.TestCase):
                     curr_stats[username] = int(count)
         self.assertEqual(res_json, curr_stats)
 
-    def test_add_statistics(self):
+    def test_add_statistics_pi(self):
+        res_json, status_code = server_test(f"http://{HOST}:{PORT}/pi", "POST", {"username":"1111", "password":"1111-pw", "simulations":100})
+        self.assertEqual(status_code, 200)
+        res_json, status_code = server_test(f"http://{HOST}:{PORT}/statistics", "POST", {"username":"1113", "password":"1113-pw"})
+        self.assertEqual(status_code, 200)
+        curr_stats = {}
+        if os.path.exists(STATS_FILE):  #get current statustics from txt file
+            with open(STATS_FILE, 'r') as f:
+                for line in f:
+                    username, count = line.strip().split()
+                    curr_stats[username] = int(count)
+        res_json, status_code = server_test(f"http://{HOST}:{PORT}/pi", "POST", {"username":"1111", "password":"1111-pw", "simulations":100})
+        self.assertEqual(status_code, 200)
+        res_json, status_code = server_test(f"http://{HOST}:{PORT}/statistics", "POST", {"username":"1113", "password":"1113-pw"})
+        self.assertEqual(status_code, 200)
+        curr_stats["1111"] += 1
+        curr_stats["1113"] += 1
+        self.assertEqual(res_json.get("1111"), curr_stats["1111"])
+        self.assertEqual(res_json.get("1113"), curr_stats["1113"])
+
+    def test_add_statistics_legacy_pi(self):
+        res_json, status_code = server_test(f"http://{HOST}:{PORT}/legacy_pi", "POST", {"username":"1112", "password":"1112-pw", "protocol":"tcp"})
+        self.assertEqual(status_code, 200)
+        res_json, status_code = server_test(f"http://{HOST}:{PORT}/statistics", "POST", {"username":"1113", "password":"1113-pw"})
+        self.assertEqual(status_code, 200)
+        curr_stats = {}
+        if os.path.exists(STATS_FILE):  #get current statustics from txt file
+            with open(STATS_FILE, 'r') as f:
+                for line in f:
+                    username, count = line.strip().split()
+                    curr_stats[username] = int(count)
+        res_json, status_code = server_test(f"http://{HOST}:{PORT}/legacy_pi", "POST", {"username":"1112", "password":"1112-pw", "protocol":"tcp"})
+        self.assertEqual(status_code, 200)
+        res_json, status_code = server_test(f"http://{HOST}:{PORT}/statistics", "POST", {"username":"1113", "password":"1113-pw"})
+        self.assertEqual(status_code, 200)
+        curr_stats["1112"] += 1
+        curr_stats["1113"] += 1
+        self.assertEqual(res_json.get("1112"), curr_stats["1112"])
+        self.assertEqual(res_json.get("1113"), curr_stats["1113"])
+
+    def test_add_statistics_statistics(self):
+        res_json, status_code = server_test(f"http://{HOST}:{PORT}/statistics", "POST", {"username":"1113", "password":"1113-pw"})
+        self.assertEqual(status_code, 200)
         curr_stats = {}
         if os.path.exists(STATS_FILE):  #get current statustics from txt file
             with open(STATS_FILE, 'r') as f:
