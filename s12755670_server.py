@@ -5,7 +5,6 @@ from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 
 app = Flask(__name__)
 HOST, PORT = "localhost", 5000
-app = Flask(__name__)
 LEGACY_HOST, LEGACY_PORT = "localhost", 31416
 STATS_FILE = 'user_statistics.txt'
 lock = threading.Lock() 
@@ -22,7 +21,7 @@ def myth_value(n):
 
 #R2
 def is_float(n):    #check the string is/isnot valid float
-    if 'e' in n.lower():
+    if 'e' in n.lower():    #avoid e
         return False
     try:
         float(n)
